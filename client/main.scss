@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import "./vars.scss";
+
+@font-face {
+  font-family: 'Avenir';
+  src: url('./assets/Avenir.ttc') format('OpenType'),
+}
+
+html {
+  font-family: 'Avenir', 'Open Sans', sans-serif;
+  height: 100%;
+}
+
+body {
+  width: 100vw;
+}
+
+textarea {
+  font-family: 'Avenir', 'Open Sans', sans-serif;
+}
+
+button, textarea, input, select {
+  outline: none;
+  border-radius: none;
+  -webkit-border-radius: 0px;
+}
+
+.App {
+  max-width: 1432px;
+  width: 100%;
+  margin: auto;
+  padding: 85px 40px 60px;
+  #nav-space {
+    margin-bottom: 86px;
+  }
+  @media(max-width: 600px) {
+    padding: 30px 40px;
+  }
+}
+
+
+textarea,
+input.text,
+input[type="text"],
+input[type="button"],
+input[type="submit"],
+.input-checkbox {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.jc-c {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.jc-sb {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.jc-sa {
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+}
+
+.jc-fe {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.jc-fs {
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+
+.ai-c {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.ai-fs {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.ai-fe {
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+.fd-c {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.fw-w {
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}

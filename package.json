@@ -28,8 +28,13 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "bcrypt": "^3.0.2",
     "body-parser": "^1.16.1",
     "express": "^4.14.1",
+    "express-session": "^1.15.6",
+    "mysql": "^2.16.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "react": "^15.6.2",
     "react-dom": "^15.5.4",
     "react-draggable": "^3.0.3",

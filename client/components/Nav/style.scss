@@ -1,0 +1,30 @@
+@import '../../vars.scss';
+
+#Nav {
+  background: black;
+  padding: 15px;
+  .logo-wrapper {
+    img {
+      height: 100%;
+      max-width: 460px;
+      min-width: 460px;
+    }
+  }
+  .home-button {
+    
+  }
+  .logout-button {
+    padding: 15px 15px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    background: none;
+    color: white;
+    border: solid 1px white;
+    cursor: pointer;
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
+}

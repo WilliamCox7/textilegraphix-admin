@@ -26,16 +26,8 @@ button, textarea, input, select {
 }
 
 .App {
-  max-width: 1432px;
   width: 100%;
   margin: auto;
-  padding: 85px 40px 60px;
-  #nav-space {
-    margin-bottom: 86px;
-  }
-  @media(max-width: 600px) {
-    padding: 30px 40px;
-  }
 }
 
 

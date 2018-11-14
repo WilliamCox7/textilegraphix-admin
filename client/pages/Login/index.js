@@ -72,7 +72,7 @@ class Login extends Component {
             <h3>{this.state.errMsg}</h3>
           ) : null}
           <button onClick={this.authenticate}>LOGIN</button>
-          <h2>Forgot Password? <Link to="/reset">Reset</Link></h2>
+          <h2>Forgot Password? <Link to="/forgot">Reset</Link></h2>
         </div>
       </div>
     );

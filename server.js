@@ -6,6 +6,7 @@ const fs = require('fs');
 const config = require('./config');
 const passport = require('passport');
 const session = require('express-session');
+const AuthModule = require('./server_modules/authentication');
 const app = module.exports = express();
 
 app.set('port', (process.env.PORT || 3002));
@@ -23,6 +24,8 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 require('./routes')(app);
+
+AuthModule.clearShortTokens();
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, './build/index.html'));

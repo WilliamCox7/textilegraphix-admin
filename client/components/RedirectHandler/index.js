@@ -13,15 +13,19 @@ class RedirectHandler extends Component {
   }
 
   componentDidMount() {
-    this.getUser();
+    if (this.pageNeedsAuth(window.location)) this.getUser();
     this.props.history.listen((location, action) => {
-      if (this.state.currentLocation !== location.pathname) {
+      if (this.state.currentLocation !== location.pathname && this.pageNeedsAuth(location)) {
         this.setState({currentLocation: location.pathname});
         this.getUser();
       } else {
         this.setState({currentLocation: location.pathname});
       }
     });
+  }
+
+  pageNeedsAuth(location) {
+    return location.pathname !== '/forgot' && location.pathname !== '/reset';
   }
 
   getUser() {

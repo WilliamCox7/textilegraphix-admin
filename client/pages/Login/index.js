@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Nav from '../../components/Nav';
+import LoginNav from '../../components/LoginNav';
 import { Link, withRouter } from "react-router-dom";
 import axios from 'axios';
 import getAsset from '../../modules/get-asset';
@@ -54,7 +54,7 @@ class Login extends Component {
   render() {
     return (
       <div id="Login">
-        <Nav />
+        <LoginNav />
         <div id="login-form" className="flex fd-c ai-c jc-c">
           <div className="logo-container">
             <img src={getAsset('logo-black')} />

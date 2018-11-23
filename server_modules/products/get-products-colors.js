@@ -2,15 +2,15 @@ const mysql = require('promise-mysql');
 const config = require('../../config');
 const ErrorModule = require('../error');
 
-module.exports = (token) => {
+module.exports = function getProductsColors(product) {
   return mysql.createConnection(config.mysql).then((conn) => {
 
 
     return conn.query(`
-      DELETE FROM tokens
-      WHERE token = '${token}'
+      SELECT * FROM productColors
+      WHERE productId = ${product.id}
     `)
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'WPL6')));
+    .catch((err) => Promise.reject(ErrorModule.handle(err, '6RGM')));
 
 
   });

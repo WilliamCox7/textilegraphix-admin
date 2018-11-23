@@ -1,0 +1,39 @@
+@import '../../vars.scss';
+
+#HomeNav {
+  -webkit-box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  .logo-box {
+    padding: 10px;
+    min-width: 80px;
+    width: 80px;
+    height: 80px;
+    background: black;
+    img {
+      width: 100%;
+    }
+  }
+  .action-wrapper {
+    width: 100%;
+    padding: 15px;
+    h1 {
+      font-size: 24px;
+      margin-top: 5px;
+      margin-left: 20px;
+    }
+    .logout-button {
+      padding: 15px 15px 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      text-decoration: none;
+      background: none;
+      color: black;
+      border: solid 1px black;
+      cursor: pointer;
+      &:hover {
+        background: black;
+        color: white;
+      }
+    }
+  }
+}

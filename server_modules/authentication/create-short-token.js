@@ -1,28 +1,32 @@
-const mysql = require('mysql');
+const mysql = require('promise-mysql');
 const config = require('../../config');
-const conn = mysql.createConnection(config.mysql);
 const deleteShortToken = require('./delete-short-token');
-
-conn.connect();
+const ErrorModule = require('../error');
 
 module.exports = (requestBody) => {
-  return new Promise((resolve, reject) => {
+  return mysql.createConnection(config.mysql).then((conn) => {
+
+  
     let shortToken = `${s4()}${s4()}${s4()}${s4()}`;
-    conn.query(`
+    return conn.query(`
       SELECT id 
       FROM users
       WHERE email = '${requestBody.email}'
-    `, (error, result) => {
-      if (error) reject(error);
-      conn.query(`
+    `)
+    .then((result) => {
+      return conn.query(`
         INSERT INTO tokens (userId, token)
         VALUES ('${result[0].id}', '${shortToken}')
-      `, (error, result) => {
-        if (error) reject(error);
+      `)
+      .then((result) => {
         setTimeout(() => deleteShortToken(shortToken), 300000);
-        resolve(shortToken);
-      });
-    });
+        return shortToken;
+      })
+      .catch((err) => Promise.reject(ErrorModule.handle(err, 'HIW5')));
+    })
+    .catch((err) => Promise.reject(ErrorModule.handle(err, '4JOD')));
+
+
   });
 }
 

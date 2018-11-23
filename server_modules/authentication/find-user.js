@@ -1,11 +1,16 @@
-const mysql = require('mysql');
+const mysql = require('promise-mysql');
 const config = require('../../config');
-const conn = mysql.createConnection(config.mysql);
 
 module.exports = function findUser(email, cb) {
-  conn.query(`SELECT * FROM users WHERE email = '${email}'`, (error, users) => {
-    if (error) cb(null);
-    else if (users.length) cb(null, users[0]);
-    else cb(null);
+  return mysql.createConnection(config.mysql).then((conn) => {
+
+    return conn.query(`SELECT * FROM users WHERE email = '${email}'`)
+    .then((users) => {
+      if (users.length) cb(null, users[0]);
+      else cb(null);
+    })
+    .catch((err) => cb(null));
+
+
   });
 }

@@ -1,32 +1,33 @@
-const mysql = require('mysql');
+const mysql = require('promise-mysql');
 const config = require('../../config');
-const conn = mysql.createConnection(config.mysql);
 const bcrypt = require('bcrypt');
-
-conn.connect();
+const ErrorModule = require('../error');
 
 module.exports = (requestBody) => {
-  return new Promise((resolve, reject) => {
-    conn.query(`
+  return mysql.createConnection(config.mysql).then((conn) => {
+
+
+    return conn.query(`
       SELECT * 
       FROM tokens
       WHERE token = '${requestBody.token}'
-    `, (error, result) => {
-      if (error) reject(error);
+    `)
+    .then((result) => {
       if (result && result.length) {
         let salt = bcrypt.genSaltSync(10);
         let hash = bcrypt.hashSync(requestBody.password, salt);
-        conn.query(`
+        return conn.query(`
           UPDATE users
           SET password = '${hash}'
           WHERE id = ${result[0].userId}
-        `, (error, result) => {
-          if (error) reject(error);
-          resolve(result);
-        });
+        `)
+        .catch((err) => Promise.reject(ErrorModule.handle(err, 'PN6Y')));
       } else {
-        reject('Short token has expired');
+        return Promise.reject('Short token has expired');
       }
     })
+    .catch((err) => Promise.reject(ErrorModule.handle(err, 'UO3E')));
+
+
   });
 }

@@ -1,0 +1,8 @@
+@import '../../vars.scss';
+
+#PageNav {
+  width: 80px;
+  height: calc(100vh - 80px);
+  -webkit-box-shadow: 3px 0px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: 3px 0px 6px rgba(0, 0, 0, 0.16);
+}

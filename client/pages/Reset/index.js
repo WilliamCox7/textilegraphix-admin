@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Nav from '../../components/Nav';
+import LoginNav from '../../components/LoginNav';
 import { withRouter } from "react-router-dom";
 import axios from 'axios';
 import getAsset from '../../modules/get-asset';
@@ -49,7 +49,7 @@ class Reset extends Component {
   render() {
     return (
       <div id="Reset">
-        <Nav />
+        <LoginNav />
         <div id="Reset-form" className="flex fd-c ai-c jc-c">
           <div className="logo-container">
             <img src={getAsset('logo-black')} />

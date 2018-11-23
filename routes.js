@@ -4,6 +4,7 @@ const conn = mysql.createConnection(config.mysql);
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const AuthModule = require('./server_modules/authentication');
+const ProductModule = require('./server_modules/products');
 
 conn.connect();
 
@@ -62,6 +63,17 @@ module.exports = (app) => {
     .catch((err) => {
       console.error(err);
       res.status(500).send('A problem occurred while updating the password');
+    });
+  });
+
+  app.get('/products', (req, res) => {
+    ProductModule.getProducts()
+    .then((products) => {
+      res.status(200).send(products);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('A problem occured while getting the products');
     });
   });
 

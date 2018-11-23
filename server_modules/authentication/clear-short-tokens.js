@@ -1,7 +1,14 @@
-const mysql = require('mysql');
+const mysql = require('promise-mysql');
 const config = require('../../config');
-const conn = mysql.createConnection(config.mysql);
+const ErrorModule = require('../error');
 
-conn.connect();
+module.exports = () => {
+  return mysql.createConnection(config.mysql).then((conn) => {
 
-module.exports = () => conn.query(`DELETE FROM tokens`);
+
+    return conn.query(`DELETE FROM tokens`)
+    .catch((err) => Promise.reject(ErrorModule.handle(err, 'UK7E')));
+
+
+  });
+}

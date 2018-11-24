@@ -20,11 +20,18 @@ module.exports = (requestBody) => {
       `)
       .then((result) => {
         setTimeout(() => deleteShortToken(shortToken), 300000);
+        conn.end();
         return shortToken;
       })
-      .catch((err) => Promise.reject(ErrorModule.handle(err, 'HIW5')));
+      .catch((err) => {
+        conn.end();
+        return Promise.reject(ErrorModule.handle(err, 'HIW5'));
+      });
     })
-    .catch((err) => Promise.reject(ErrorModule.handle(err, '4JOD')));
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, '4JOD'));
+    });
 
 
   });

@@ -10,7 +10,14 @@ module.exports = function getProductsColors(product) {
       SELECT * FROM productColors
       WHERE productId = ${product.id}
     `)
-    .catch((err) => Promise.reject(ErrorModule.handle(err, '6RGM')));
+    .then((result) => {
+      conn.end();
+      return result;
+    })
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, '6RGM'));
+    });
 
 
   });

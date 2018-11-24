@@ -6,10 +6,16 @@ module.exports = function findUser(email, cb) {
 
     return conn.query(`SELECT * FROM users WHERE email = '${email}'`)
     .then((users) => {
+      conn.end();
       if (users.length) cb(null, users[0]);
-      else cb(null);
+      else {
+        return cb(null);
+      }
     })
-    .catch((err) => cb(null));
+    .catch((err) => {
+      conn.end();
+      return cb(null)
+    });
 
 
   });

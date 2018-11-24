@@ -21,12 +21,19 @@ module.exports = (requestBody) => {
           SET password = '${hash}'
           WHERE id = ${result[0].userId}
         `)
-        .catch((err) => Promise.reject(ErrorModule.handle(err, 'PN6Y')));
+        .catch((err) => {
+          conn.end();
+          return Promise.reject(ErrorModule.handle(err, 'PN6Y'));
+        });
       } else {
+        conn.end();
         return Promise.reject('Short token has expired');
       }
     })
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'UO3E')));
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, 'UO3E'));
+    });
 
 
   });

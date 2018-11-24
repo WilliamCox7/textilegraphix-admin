@@ -11,6 +11,7 @@ module.exports = function getProductsPrintArea(product) {
       WHERE productId = ${product.id}
     `)
     .then((printArea) => {
+      conn.end();
       return {
         width: printArea[0].width,
         height: printArea[0].height,
@@ -18,7 +19,10 @@ module.exports = function getProductsPrintArea(product) {
         left: printArea[0].left,
       }
     })
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'MBG0')));
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, 'MBG0'));
+    });
 
 
   });

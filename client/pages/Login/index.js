@@ -22,6 +22,12 @@ class Login extends Component {
 
   componentDidMount() {
     axios.get('/logout');
+
+    document.addEventListener('keypress', (e) => {
+      if (e.keyCode === 13) {
+        this.authenticate();
+      }
+    });
   }
 
   update(e) {

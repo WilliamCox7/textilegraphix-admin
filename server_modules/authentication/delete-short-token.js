@@ -10,7 +10,15 @@ module.exports = (token) => {
       DELETE FROM tokens
       WHERE token = '${token}'
     `)
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'WPL6')));
+    .then((result) => {
+      conn.end();
+      return result;
+    })
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, 'WPL6'));
+    });
+    
 
 
   });

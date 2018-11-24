@@ -11,11 +11,15 @@ module.exports = function getProductsImages(product) {
       WHERE productId = ${product.id}
     `)
     .then((images) => {
+      conn.end();
       let imgObj = {};
       images.forEach((image) => imgObj[image.hex] = [ image.frontUrl, image.backUrl ]);
       return imgObj;
     })
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'QD1V')));
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, 'QD1V'));
+    });
 
 
   });

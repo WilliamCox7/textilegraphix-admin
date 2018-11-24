@@ -11,10 +11,16 @@ module.exports = function getProducts() {
 
   let products;
   return conn.query(`SELECT * FROM products`)
-  .then((results) => products = results)
+  .then((results) => {
+    conn.end();
+    return products = results;
+  })
+  .catch((err) => {
+    conn.end();
+    return Promise.reject(ErrorModule.handle(err, 'JKL6'));
+  })
   .then(() => iterate(products.entries(), getProductDetails))
-  .then(() => products)
-  .catch((err) => Promise.reject(ErrorModule.handle(err, 'JKL6')));
+  .then(() => products);
 
 
   });

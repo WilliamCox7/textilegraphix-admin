@@ -7,7 +7,14 @@ module.exports = () => {
 
 
     return conn.query(`DELETE FROM tokens`)
-    .catch((err) => Promise.reject(ErrorModule.handle(err, 'UK7E')));
+    .then((result) => {
+      conn.end();
+      return result;
+    })
+    .catch((err) => {
+      conn.end();
+      return Promise.reject(ErrorModule.handle(err, 'UK7E'));
+    });
 
 
   });

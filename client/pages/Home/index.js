@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import HomeNav from '../../components/HomeNav';
 import PageNav from '../../components/PageNav';
 import axios from 'axios';
+import Draggable from 'react-draggable';
 import getAsset from '../../modules/get-asset';
 import './style.scss';
 
@@ -14,13 +15,30 @@ class Home extends Component {
       search: '',
       selected: {},
       index: 0,
+      vIndex: 0,
       mode: 'read',
       loaded: false,
-      selectedHex: ''
+      selectedHex: '',
+      imageIndex: 0,
+      drag: {
+        dragging: false,
+        clientY: undefined,
+        clientX: undefined,
+        width: undefined,
+        height: undefined
+      }
     }
     this.updateSearch = this.updateSearch.bind(this);
     this.updateField = this.updateField.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
+    this.setVIndex = this.setVIndex.bind(this);
+    this.setImageIndex = this.setImageIndex.bind(this);
+    this.setPosition = this.setPosition.bind(this);
+    this.startDrag = this.startDrag.bind(this);
+    this.drag = this.drag.bind(this);
+    this.stopDrag = this.stopDrag.bind(this);
+    this.removeImage = this.removeImage.bind(this);
+    this.storeFile = this.storeFile.bind(this);
   }
 
   componentDidMount() {
@@ -62,6 +80,85 @@ class Home extends Component {
     document.getElementById('search-input').value = '';
   }
 
+  setVIndex(index) {
+    let selectedHex = this.state.selected.colors[index].hex;
+    this.setState({vIndex: index, selectedHex: selectedHex});
+  }
+
+  setImageIndex(index) {
+    this.setState({imageIndex: index});
+  }
+
+  setPosition(e) {
+    let transform = e.target.style.transform;
+    let transformParams = transform.substring(transform.indexOf('(') + 1, transform.indexOf(')')).split(', ');
+    let offsetLeft = Number(transformParams[0].substring(0, transformParams[0].length - 2));
+    let offsetTop = Number(transformParams[1].substring(0, transformParams[1].length - 2));
+    let newState = Object.assign({}, this.state);
+    newState.selected.printArea[newState.imageIndex].offsetLeft = offsetLeft;
+    newState.selected.printArea[newState.imageIndex].offsetTop = offsetTop;
+    this.setState(newState);
+  }
+
+  startDrag(e) {
+    let clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    let clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    let parent = e.target.parentElement;
+    let width = Number(parent.style.width.substring(0, parent.style.width.length - 2));
+    let height = Number(parent.style.height.substring(0, parent.style.height.length - 2));
+    let newState = Object.assign({}, this.state);
+    newState.drag.dragging = true;
+    newState.drag.clientY = clientY;
+    newState.drag.clientX = clientX;
+    newState.drag.width = width;
+    newState.drag.height = height;
+    this.setState(newState);
+  }
+
+  drag(e) {
+    let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    if (this.state.drag.dragging && clientY && clientX) {
+      var newWidth = this.state.drag.width - (this.state.drag.clientX - clientX);
+      var newHeight = this.state.drag.height - (this.state.drag.clientY - clientY);
+      let newState = Object.assign({}, this.state);
+      newState.selected.printArea[newState.imageIndex].width = newWidth + 'px';
+      newState.selected.printArea[newState.imageIndex].height = newHeight + 'px';
+      this.setState(newState);
+    }
+    e.preventDefault();
+    return false;
+  }
+
+  stopDrag(e) {
+    let newState = Object.assign({}, this.state);
+    newState.drag = {
+      dragging: false,
+      clientY: undefined,
+      clientX: undefined,
+      width: undefined,
+      height: undefined,
+    };
+    this.setState(newState);
+  }
+
+  removeImage(hex, index) {
+    let newState = Object.assign({}, this.state);
+    newState.selected.images[hex][index] = "";
+    this.setState(newState);
+  }
+
+  storeFile(e, id, hex, index) {
+    let reader = new FileReader();
+    reader.onloadend = () => {
+      let newState = Object.assign({}, this.state);
+      newState.selected.images[hex][index] = reader.result;
+      this.setState(newState);
+    }
+    reader.readAsDataURL(e.currentTarget.files[0]);
+    document.getElementById(id).value = '';
+  }
+
   render() {
 
     let products = this.state.products;
@@ -86,6 +183,51 @@ class Home extends Component {
         </div>
       );
     });
+
+    let variants = [];
+
+    if (this.state.selected.colors) {
+      variants = this.state.selected.colors.map((color, i) => {
+        return (
+          <div className="variant flex jc-sb ai-c" key={i} onClick={() => this.setVIndex(i)}
+            style={this.state.vIndex === i ? {borderColor: '#44B1DE'} : null}>
+            <div className="variant-name flex ai-c">
+              <div className="variant-color" style={{background: color.hex}}></div> {color.name.toUpperCase()}
+            </div>
+            <div className="flex">
+              <div className="flex">
+                {this.state.selected.images[color.hex][0] ? (
+                  <div className="variant-item flex ai-c">
+                    <h3>{this.state.selected.images[color.hex][0].substring(0, 10)}...</h3>
+                    <img onClick={() => this.removeImage(color.hex, 0)} src={getAsset('red-x')} />
+                  </div>
+                ) : (
+                  <div className="variant-item flex ai-c">
+                    <h3>FRONT IMG</h3>
+                    <img onClick={() => document.getElementById('input-front').click()} src={getAsset('blue-plus')} />
+                    <input id="input-front" type="file" accept="image/x-png,image/jpeg" onChange={(e) => this.storeFile(e, 'input-front', color.hex, 0)} />
+                  </div>
+                )}
+              </div>
+              <div className="flex">
+                {this.state.selected.images[color.hex][1] ? (
+                  <div className="variant-item flex ai-c">
+                    <h3>{this.state.selected.images[color.hex][1].substring(0, 10)}...</h3>
+                    <img onClick={() => this.removeImage(color.hex, 1)} src={getAsset('red-x')} />
+                  </div>
+                ) : (
+                  <div className="variant-item flex ai-c">
+                    <h3>BACK IMG</h3>
+                    <img onClick={() => document.getElementById('input-back').click()} src={getAsset('blue-plus')} />
+                    <input id="input-back" type="file" accept="image/x-png,image/jpeg" onChange={(e) => this.storeFile(e, 'input-back', color.hex, 1)} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      });
+    }
 
     return (
       <div id="Home">
@@ -160,10 +302,32 @@ class Home extends Component {
                       <div className="field">
                         OUR RATING: <input className="small" value={this.state.selected.rating} name="rating" onChange={this.updateField} /> / 10
                       </div>
-                      {/* adding color varients.... */}
+                      <div className="color-variants">
+                        <h1>COLOR VARIANTS</h1>
+                        <hr />
+                        {variants}
+                      </div>
                     </div>
-                    <div>
-                      <img src={this.state.selected.images[this.state.selectedHex]} />
+                    <div className="image-wrapper">
+                      <div className="image-display">
+                        {this.state.selected.images[this.state.selectedHex][this.state.imageIndex] ? (
+                          <img src={this.state.selected.images[this.state.selectedHex][this.state.imageIndex]} />
+                        ) : (
+                          <img src={getAsset('placeholder', 'jpg')} />
+                        )}
+                      </div>
+                      <div className="image-actions flex jc-sa">
+                        <img onClick={() => this.setImageIndex(0)} src={getAsset('front-side-button')} />
+                        <img onClick={() => this.setImageIndex(1)} src={getAsset('back-side-button')} />
+                      </div>
+                      {this.state.selected.images[this.state.selectedHex][this.state.imageIndex] ? (
+                        <Draggable on bounds="parent" cancel=".resize" onStop={this.setPosition}>
+                          <div className="print-area" style={this.state.selected.printArea[this.state.imageIndex]}>
+                            <img className="resize diagonal" draggable="true" onDragStart={this.startDrag} 
+                              onDrag={this.drag} onDragEnd={this.stopDrag} src={getAsset('resize-diagonal')} />
+                          </div>
+                        </Draggable>
+                      ) : null}
                     </div>
                   </div>
                 </div>

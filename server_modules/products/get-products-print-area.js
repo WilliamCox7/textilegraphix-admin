@@ -10,14 +10,27 @@ module.exports = function getProductsPrintArea(product) {
       SELECT * FROM productPrintArea
       WHERE productId = ${product.id}
     `)
-    .then((printArea) => {
+    .then((areas) => {
       conn.end();
-      return {
-        width: printArea[0].width,
-        height: printArea[0].height,
-        top: printArea[0].top,
-        left: printArea[0].left,
-      }
+      let printAreas = [];
+      areas.forEach((area) => {
+        if (area.side === 0) {
+          printAreas.unshift({
+            width: area.width,
+            height: area.height,
+            top: area.top,
+            left: area.left
+          });
+        } else {
+          printAreas.push({
+            width: area.width,
+            height: area.height,
+            top: area.top,
+            left: area.left
+          });
+        }
+      });
+      return printAreas;
     })
     .catch((err) => {
       conn.end();

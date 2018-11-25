@@ -97,6 +97,9 @@
           }
         }
       }
+      .fields {
+        min-width: 400px;
+      }
       .field {
         margin: 10px 0px;
         letter-spacing: 2px;
@@ -130,6 +133,92 @@
           margin-left: -22px;
           top: 13px;
           z-index: -1;
+        }
+      }
+      .color-variants {
+        .variant {
+          border-left: solid 4px white;
+          padding-left: 10px;
+          margin-bottom: 5px;
+          &:hover {
+            border-color: #ECEDEF;
+          }
+          .variant-name {
+            letter-spacing: 2px;
+            font-size: 14px;
+            .variant-color {
+              width: 20px;
+              height: 20px;
+              border: solid 2px #707070;
+              margin-right: 10px;
+              border-radius: 50px;
+            }
+          }
+          .variant-item {
+            margin-left: 10px;
+            #input-front, #input-back {
+              display: none;
+            }
+          }
+          h3 {
+            width: 103px;
+            text-align: center;
+            background: #C6C9CF;
+            padding: 7px;
+            letter-spacing: 2px;
+            color: white;
+            border-radius: 5px;
+            font-size: 12px;
+          }
+          img {
+            height: 15px;
+            margin-left: 5px;
+            cursor: pointer;
+          }
+        }
+      }
+      .image-wrapper {
+        position: relative;
+        &:hover {
+          .print-area {
+            background: rgba(255, 255, 255, 0.7);
+            border: solid 3px #E6E6E6;
+            display: block;
+          }
+        }
+        .image-actions {
+          img {
+            width: 80px;
+            cursor: pointer;
+          }
+        }
+        .image-display {
+          img {
+            width: 100%;
+            max-width: 340px;
+          }
+        }
+        .print-area {
+          position: absolute;
+          border-radius: 4px;
+          border: solid 3px transparent;
+          display: none;
+          cursor: move;
+          .resize {
+            width: 30px;
+            position: absolute;
+            cursor: -webkit-grab;
+            cursor: grab;
+            &:active {
+              cursor: -webkit-grabbing;
+              cursor: grabbing;
+            }
+          }
+          .diagonal {
+            right: -16px;
+            bottom: -16px;
+            padding: 4px;
+          }
         }
       }
     }

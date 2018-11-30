@@ -20,6 +20,7 @@ class Home extends Component {
       loaded: false,
       selectedHex: '',
       imageIndex: 0,
+      picker: false,
       drag: {
         dragging: false,
         clientY: undefined,
@@ -39,14 +40,24 @@ class Home extends Component {
     this.stopDrag = this.stopDrag.bind(this);
     this.removeImage = this.removeImage.bind(this);
     this.storeFile = this.storeFile.bind(this);
+    this.addNewColor = this.addNewColor.bind(this);
+    this.togglePicker = this.togglePicker.bind(this);
+    this.updatePickedColor = this.updatePickedColor.bind(this);
+    this.setMode = this.setMode.bind(this);
+    this.removeColor = this.removeColor.bind(this);
+    this.save = this.save.bind(this);
+    this.cancel = this.cancel.bind(this);
   }
 
   componentDidMount() {
     axios.get('/products')
     .then((response) => {
+      console.log(response.data[0]);
+      let selected = JSON.stringify(response.data[0]);
+      selected = JSON.parse(selected);
       this.setState({
         products: response.data, 
-        selected: Object.assign({}, response.data[0]), 
+        selected: selected, 
         loaded: true,
         selectedHex: response.data[0].colors[0].hex
       });
@@ -65,11 +76,7 @@ class Home extends Component {
   updateField(e) {
     let newState = Object.assign({}, this.state);
     newState.selected[e.target.name] = e.target.value;
-    if (JSON.stringify(newState.selected) === JSON.stringify(newState.products[newState.index])) {
-      newState.mode = 'read';
-    } else {
-      newState.mode = 'edit';
-    }
+    newState.mode = this.setMode(newState);
     this.setState(newState);
   }
 
@@ -80,8 +87,15 @@ class Home extends Component {
     document.getElementById('search-input').value = '';
   }
 
-  setVIndex(index) {
-    let selectedHex = this.state.selected.colors[index].hex;
+  setVIndex(i) {
+    let selectedHex, index;
+    if (i <= this.state.selected.colors.length - 1) {
+      selectedHex = this.state.selected.colors[i].hex;
+      index = i;
+    } else {
+      selectedHex = this.state.selected.colors[0].hex;
+      index = 0;
+    }
     this.setState({vIndex: index, selectedHex: selectedHex});
   }
 
@@ -145,6 +159,7 @@ class Home extends Component {
   removeImage(hex, index) {
     let newState = Object.assign({}, this.state);
     newState.selected.images[hex][index] = "";
+    newState.mode = this.setMode(newState);
     this.setState(newState);
   }
 
@@ -153,10 +168,76 @@ class Home extends Component {
     reader.onloadend = () => {
       let newState = Object.assign({}, this.state);
       newState.selected.images[hex][index] = reader.result;
+      newState.mode = this.setMode(newState);
       this.setState(newState);
     }
     reader.readAsDataURL(e.currentTarget.files[0]);
     document.getElementById(id).value = '';
+  }
+
+  addNewColor() {
+    if (!this.state.selected.images['#ffffff']) {
+      let newState = Object.assign({}, this.state);
+      newState.selected.colors.push({
+        hex: '#ffffff', name: 'White'
+      });
+      newState.selected.images['#ffffff'] = ['', ''];
+      newState.mode = this.setMode(newState);
+      this.setState(newState);
+    }
+  }
+
+  togglePicker() {
+    this.setState({picker: !this.state.picker});
+  }
+
+  updatePickedColor(e) {
+    let newState = Object.assign({}, this.state);
+    let oldValue = newState.selected.colors[newState.vIndex][e.target.name];
+    newState.selected.colors[newState.vIndex][e.target.name] = e.target.value;
+    newState.selected.images[e.target.value] = newState.selected.images[oldValue];
+    newState.selectedHex = newState.selected.colors[newState.vIndex].hex;
+    delete newState.selected.images[oldValue];
+    newState.mode = this.setMode(newState);
+    this.setState(newState);
+  }
+
+  removeColor() {
+    let newState = Object.assign({}, this.state);
+    delete newState.selected.images[newState.selectedHex];
+    newState.selected.colors = newState.selected.colors.filter((color, i) => {
+      return i !== newState.vIndex;
+    });
+    newState.selectedHex = newState.selected.colors[0].hex;
+    newState.vIndex = 0;
+    newState.mode = this.setMode(newState);
+    newState.picker = false;
+    this.setState(newState);
+  }
+
+  setMode(newState) {
+    if (JSON.stringify(newState.selected) === JSON.stringify(newState.products[newState.index])) {
+      return 'read';
+    } else {
+      return 'edit';
+    }
+  }
+
+  cancel() {
+    let newState = Object.assign({}, this.state);
+    let selected = JSON.stringify(newState.products[newState.index]);
+    newState.selected = JSON.parse(selected);
+    newState.index = 0;
+    newState.vIndex = 0;
+    newState.mode = 'read';
+    newState.selectedHex = newState.selected.colors[0].hex;
+    newState.imageIndex = 0;
+    newState.picker = false;
+    this.setState(newState);
+  }
+
+  save() {
+
   }
 
   render() {
@@ -191,8 +272,22 @@ class Home extends Component {
         return (
           <div className="variant flex jc-sb ai-c" key={i} onClick={() => this.setVIndex(i)}
             style={this.state.vIndex === i ? {borderColor: '#44B1DE'} : null}>
+            {this.state.picker && this.state.vIndex === i ? (
+              <div className="picker flex ai-c jc-sb">
+                <div>
+                  <input onChange={this.updatePickedColor} name="hex" type="text" placeholder="#ffffff" value={color.hex} />
+                  <input onChange={this.updatePickedColor} name="name" type="text" placeholder="White" value={color.name} />
+                </div>
+                <div>
+                  {this.state.selected.colors.length > 1 ? (
+                    <img className="remove-color" src={getAsset('garbage')} onClick={this.removeColor} />
+                  ) : null}
+                  <img src={getAsset('red-x')} onClick={this.togglePicker} />
+                </div>
+              </div>
+            ) : null}
             <div className="variant-name flex ai-c">
-              <div className="variant-color" style={{background: color.hex}}></div> {color.name.toUpperCase()}
+              <div className="variant-color" style={{background: color.hex}} onClick={this.togglePicker}></div> {color.name.toUpperCase()}
             </div>
             <div className="flex">
               <div className="flex">
@@ -306,7 +401,18 @@ class Home extends Component {
                         <h1>COLOR VARIANTS</h1>
                         <hr />
                         {variants}
+                        <div className="variant-add flex jc-sb ai-c" onClick={this.addNewColor}>
+                          <div className="variant-add-text flex ai-c">
+                            <div className="variant-button flex jc-c ai-c"><span>+</span></div> ADD COLOR VARIANT
+                          </div> 
+                        </div>
                       </div>
+                      {this.state.mode === 'edit' ? (
+                        <div className="edit-buttons">
+                          <button onClick={this.save}>SAVE</button>
+                          <button onClick={this.cancel}>CANCEL</button>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="image-wrapper">
                       <div className="image-display">

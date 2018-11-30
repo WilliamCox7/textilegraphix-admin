@@ -51,21 +51,19 @@
           color: #212224;
           height: calc(100% - 44px);
           overflow-y: scroll;
-          &:hover {
-            cursor: pointer;
-            color: $main-blue;
-            .product-item {
-              .icon-wrapper {
-                display: block;
-              }
-            }
-          }
           hr {
             border: none;
             border-bottom: solid 1px #EAEAEA;
           }
           .product-item {
             height: 22px;
+            &:hover {
+              cursor: pointer;
+              color: $main-blue;
+              .icon-wrapper {
+                display: block;
+              }
+            }
             h2 {
               font-weight: bold;
               font-size: 14px;
@@ -140,10 +138,12 @@
           border-left: solid 4px white;
           padding-left: 10px;
           margin-bottom: 5px;
+          position: relative;
           &:hover {
             border-color: #ECEDEF;
           }
           .variant-name {
+            cursor: pointer;
             letter-spacing: 2px;
             font-size: 14px;
             .variant-color {
@@ -152,6 +152,22 @@
               border: solid 2px #707070;
               margin-right: 10px;
               border-radius: 50px;
+            }
+          }
+          .picker {
+            position: absolute;
+            padding: 5px 0px;
+            background: white;
+            left: 35px;
+            width: calc(100% - 35px);
+            input {
+              margin-left: 5px;
+              border: solid 1px #AAAEB3;
+              padding: 4px;
+              border-radius: 5px;
+            }
+            .remove-color {
+              height: 18px;
             }
           }
           .variant-item {
@@ -174,6 +190,29 @@
             height: 15px;
             margin-left: 5px;
             cursor: pointer;
+          }
+        }
+        .variant-add {
+          border-left: solid 4px white;
+          padding-left: 10px;
+          margin-bottom: 5px;
+          cursor: pointer;
+          .variant-add-text {
+            letter-spacing: 2px;
+            font-size: 14px;
+            .variant-button {
+              width: 20px;
+              height: 20px;
+              background: $main-blue;
+              border: solid 2px $main-blue;
+              margin-right: 10px;
+              border-radius: 50px;
+              span {
+                color: white;
+                font-weight: bold;
+                margin-left: 2px;
+              }
+            }
           }
         }
       }
@@ -219,6 +258,21 @@
             bottom: -16px;
             padding: 4px;
           }
+        }
+      }
+      .edit-buttons {
+        margin-top: 50px;
+        button {
+          border: none;
+          border-radius: 5px;
+          background: $main-green;
+          color: white;
+          font-size: 8px;
+          letter-spacing: 2px;
+          padding: 10px 20px;
+          font-weight: bold;
+          cursor: pointer;
+          margin-right: 10px;
         }
       }
     }

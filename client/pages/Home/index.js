@@ -47,6 +47,10 @@ class Home extends Component {
     this.removeColor = this.removeColor.bind(this);
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.editProduct = this.editProduct.bind(this);
+    this.addNewProduct = this.addNewProduct.bind(this);
+    this.saveNew = this.saveNew.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   componentDidMount() {
@@ -216,6 +220,7 @@ class Home extends Component {
   }
 
   setMode(newState) {
+    if (newState.mode === 'create') return 'create';
     if (JSON.stringify(newState.selected) === JSON.stringify(newState.products[newState.index])) {
       return 'read';
     } else {
@@ -224,12 +229,59 @@ class Home extends Component {
   }
 
   cancel() {
+    if (this.state.products.length) {
+      let newState = Object.assign({}, this.state);
+      let selected = JSON.stringify(newState.products[newState.index]);
+      newState.selected = JSON.parse(selected);
+      newState.vIndex = 0;
+      newState.mode = 'read';
+      newState.selectedHex = newState.selected.colors[0].hex;
+      newState.imageIndex = 0;
+      newState.picker = false;
+      this.setState(newState);
+    }
+  }
+
+  editProduct(index) {
     let newState = Object.assign({}, this.state);
-    let selected = JSON.stringify(newState.products[newState.index]);
+    let selected = JSON.stringify(newState.products[index]);
     newState.selected = JSON.parse(selected);
-    newState.index = 0;
+    newState.index = index;
     newState.vIndex = 0;
-    newState.mode = 'read';
+    newState.mode = 'edit';
+    newState.selectedHex = newState.selected.colors[0].hex;
+    newState.imageIndex = 0;
+    newState.picker = false;
+    this.setState(newState);
+  }
+
+  addNewProduct() {
+    let newState = Object.assign({}, this.state);
+    newState.selected = {
+      brand: "",
+      colors: [{ hex: "#FFFFFF", name: "White" }],
+      costOfShirt: 0,
+      images: { "#FFFFFF": ["", ""] },
+      material: "60/40 Blend",
+      number: "",
+      printArea: [{
+        height: "322px",
+        left: "34px",
+        top: "120px",
+        width: "262px"
+      }, {
+        height: "322px",
+        left: "34px",
+        top: "120px",
+        width: "262px"
+      }],
+      quality: "premium",
+      rating: "",
+      type: "t-shirts",
+      weight: 0
+    };
+    newState.vIndex = 0;
+    newState.mode = 'create';
     newState.selectedHex = newState.selected.colors[0].hex;
     newState.imageIndex = 0;
     newState.picker = false;
@@ -237,7 +289,76 @@ class Home extends Component {
   }
 
   save() {
+    let newState = Object.assign({}, this.state);
+    let updSelected = JSON.stringify(newState.selected);
+    newState.products[newState.index] = JSON.parse(updSelected);
+    newState.vIndex = 0;
+    newState.mode = 'read';
+    newState.selectedHex = newState.selected.colors[0].hex;
+    newState.imageIndex = 0;
+    newState.picker = false;
+    this.setState(newState, () => {
+      // axios update product
+      axios.put('/product', this.state.selected)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    });
+  }
 
+  saveNew() {
+    let newState = Object.assign({}, this.state);
+    newState.products.push(newState.selected);
+    newState.index = newState.products.length - 1;
+    newState.vIndex = 0;
+    newState.mode = 'read';
+    newState.selectedHex = newState.selected.colors[0].hex;
+    newState.imageIndex = 0;
+    newState.picker = false;
+    this.setState(newState, () => {
+      // axios create product
+      axios.post('/product', this.state.selected)
+      .then((response) => {
+        console.log(response);
+        // add id to selected/products
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    });
+  }
+
+  delete(index) {
+    let newState = Object.assign({}, this.state);
+    newState.products.splice(index, 1);
+    if (index > 0 && newState.products.length) {
+      let selected = JSON.stringify(newState.products[index - 1]);
+      newState.selected = JSON.parse(selected);
+      newState.selectedHex = newState.selected.colors[0].hex;
+    } else if (index === 0 && newState.products.length) {
+      let selected = JSON.stringify(newState.products[0]);
+      newState.selected = JSON.parse(selected);
+      newState.selectedHex = newState.selected.colors[0].hex;
+    }
+    newState.index = index - 1 || 0;
+    newState.vIndex = 0;
+    newState.mode = 'read';
+    newState.imageIndex = 0;
+    newState.picker = false;
+    this.setState(newState, () => {
+      // axios delete product
+      axios.put('/product', {id: this.state.selected.id})
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+      if (!this.state.products.length) this.addNewProduct();
+    });
   }
 
   render() {
@@ -252,14 +373,11 @@ class Home extends Component {
 
     let productList = products.map((product, i) => {
       return (
-        <div className="product-item-wrapper" key={i}>
-          <hr />
-          <div className="product-item flex jc-sb ai-c">
-            <h2>{product.brand.toUpperCase()} {product.number}</h2>
-            <div className="icon-wrapper">
-              <img src={getAsset('edit')} />
-              <img src={getAsset('garbage')} />
-            </div>
+        <div className="product-item flex jc-sb ai-c" key={i}>
+          <h2>{product.brand.toUpperCase()} {product.number}</h2>
+          <div className="icon-wrapper">
+            <img onClick={() => this.editProduct(i)} src={getAsset('edit')} />
+            <img onClick={() => this.delete(i)} src={getAsset('garbage')} />
           </div>
         </div>
       );
@@ -333,7 +451,7 @@ class Home extends Component {
             <div className="left-content">
               <div className="flex jc-sb ai-c">
                 <h1>PRODUCT LIST</h1>
-                <button>ADD NEW PRODUCT</button>
+                <button onClick={this.addNewProduct}>ADD NEW PRODUCT</button>
               </div>
               <div className="search-container">
                 <div className="input-container">
@@ -344,7 +462,10 @@ class Home extends Component {
                     <img className="search-icon" src={getAsset('search')} />
                   )}
                 </div>
-                {productList}
+                <div className="product-item-wrapper">
+                  <hr />
+                  {productList}
+                </div>
               </div>
             </div>
             <div className="right-content">
@@ -410,6 +531,12 @@ class Home extends Component {
                       {this.state.mode === 'edit' ? (
                         <div className="edit-buttons">
                           <button onClick={this.save}>SAVE</button>
+                          <button onClick={this.cancel}>CANCEL</button>
+                        </div>
+                      ) : null}
+                      {this.state.mode === 'create' ? (
+                        <div className="edit-buttons">
+                          <button onClick={this.saveNew}>SAVE</button>
                           <button onClick={this.cancel}>CANCEL</button>
                         </div>
                       ) : null}

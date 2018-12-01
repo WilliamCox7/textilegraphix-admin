@@ -77,4 +77,37 @@ module.exports = (app) => {
     });
   });
 
+  app.put('/product', (req, res) => {
+    ProductModule.updateProduct(req.body)
+    .then(() => {
+      res.status(200).send(`${req.body.brand} ${req.body.number} Updated`);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send(`A problem occured while updating product with id ${req.body.id}`);
+    });
+  });
+
+  app.post('/product', (req, res) => {
+    ProductModule.createProduct(req.body)
+    .then((result) => {
+      res.status(200).send(`${req.body.brand} ${req.body.number} Created`, result);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send(`A problem occured while creating product ${req.body.brand} ${req.body.number}`);
+    });
+  });
+
+  app.delete('/product', (req, res) => {
+    ProductModule.deleteProduct(req.body)
+    .then(() => {
+      res.status(200).send(`${req.body.brand} ${req.body.number} Deleted`);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send(`A problem occured while deleting product with id ${req.body.id}`);
+    });
+  });
+
 }

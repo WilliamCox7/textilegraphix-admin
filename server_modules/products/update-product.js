@@ -1,10 +1,21 @@
 const mysql = require('promise-mysql');
 const config = require('../../config');
 const ErrorModule = require('../error');
+const upsertColors = require('./upsert-colors');
+const upsertImages = require('./upsert-images');
 
 module.exports = function updateProduct(product) {
   return mysql.createConnection(config.mysql).then((conn) => {
 
+    product.printArea = product.printArea.map((area) => {
+      if (area.offsetTop) {
+        area.top = (Number(area.top.substring(0, area.top.length - 2)) + area.offsetTop) + 'px';
+      }
+      if (area.offsetLeft) {
+        area.left = (Number(area.left.substring(0, area.left.length - 2)) + area.offsetLeft) + 'px';
+      }
+      return area;
+    });
 
     return Promise.all([
 
@@ -65,55 +76,5 @@ module.exports = function updateProduct(product) {
       return Promise.reject(err);
     });
 
-
   });
-}
-
-function upsertImages(product, conn) {
-  let promises = [];
-  for (var prop in product.images) {
-    promises.push(
-      conn.query(`DELETE FROM productImages WHERE productId = ${conn.escape(product.id)}`)
-      .then(() => {
-        conn.query(`
-          REPLACE INTO productImages
-          (productId, hex, frontUrl, backUrl)
-          VALUES
-          (${conn.escape(product.id)}, ${conn.escape(prop)}, ${conn.escape(product.images[prop][0])}, ${conn.escape(product.images[prop][1])})
-        `)
-        .catch((err) => {
-          conn.end();
-          return Promise.reject(ErrorModule.handle(err, 'EV8N'));
-        })
-      })
-      .catch((err) => {
-        conn.end();
-        return Promise.reject(ErrorModule.handle(err, 'RN8W'));
-      })
-    )
-  }
-  return Promise.all(promises);
-}
-
-function upsertColors(product, conn) {
-  let promises = [];
-  return Promise.all(product.colors.map((color) => {
-    return conn.query(`DELETE FROM productColors WHERE productId = ${conn.escape(product.id)}`)
-    .then(() => {
-      return conn.query(`
-        REPLACE INTO productColors
-        (productId, hex, name)
-        VALUES
-        (${conn.escape(product.id)}, ${conn.escape(color.hex)}, ${conn.escape(color.name)})
-      `)
-      .catch((err) => {
-        conn.end();
-        return Promise.reject(ErrorModule.handle(err, 'RT9M'));
-      })
-    })
-    .catch((err) => {
-      conn.end();
-      return Promise.reject(ErrorModule.handle(err, 'HOE8'));
-    })
-  }));
 }

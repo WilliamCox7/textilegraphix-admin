@@ -5,7 +5,6 @@ const ErrorModule = require('../error');
 module.exports = function getProductsImages(product) {
   return mysql.createConnection(config.mysql).then((conn) => {
 
-
     return conn.query(`
       SELECT * FROM productImages
       WHERE productId = ${product.id}
@@ -20,7 +19,6 @@ module.exports = function getProductsImages(product) {
       conn.end();
       return Promise.reject(ErrorModule.handle(err, 'QD1V'));
     });
-
 
   });
 }

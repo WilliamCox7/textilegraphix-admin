@@ -31,6 +31,13 @@ function getErrorMessage(id) {
     case 'KH1E': return 'There was an error while updating the product print area (back)';
     case 'HOE8': return 'There was an error while deleting a products colors';
     case 'RN8W': return 'There was an error while deleting a products images';
+    case 'WTT7': return 'There was an error while creating a new product';
+    case 'LI7F': return 'There was an error while creating a products print area (front)';
+    case 'NGW5': return 'There was an error while creating a products print area (back)';
+    case 'QWD4': return 'There was an error while deleting a product';
+    case 'NUC9': return 'There was an error while deleting a products print areas';
+    case 'DHP0': return 'There was an error while deleting a products images';
+    case 'VBR1': return 'There was an error while deleting a products colors';
     default: return 'An unknown message occured';
   }
 

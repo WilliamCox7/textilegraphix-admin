@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import HomeNav from '../../components/HomeNav';
 import PageNav from '../../components/PageNav';
+import PromptModal from '../../components/PromptModal';
 import axios from 'axios';
 import Draggable from 'react-draggable';
 import getAsset from '../../modules/get-asset';
@@ -21,6 +22,8 @@ class Home extends Component {
       selectedHex: '',
       imageIndex: 0,
       picker: false,
+      showModal: false,
+      deleteIndex: undefined,
       drag: {
         dragging: false,
         clientY: undefined,
@@ -48,23 +51,31 @@ class Home extends Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.editProduct = this.editProduct.bind(this);
+    this.readProduct = this.readProduct.bind(this);
     this.addNewProduct = this.addNewProduct.bind(this);
     this.saveNew = this.saveNew.bind(this);
     this.delete = this.delete.bind(this);
+    this.hideModal = this.hideModal.bind(this);
+    this.promptDelete = this.promptDelete.bind(this);
   }
 
   componentDidMount() {
     axios.get('/products')
     .then((response) => {
-      console.log(response.data[0]);
-      let selected = JSON.stringify(response.data[0]);
-      selected = JSON.parse(selected);
-      this.setState({
-        products: response.data, 
-        selected: selected, 
-        loaded: true,
-        selectedHex: response.data[0].colors[0].hex
-      });
+      console.log(response.data);
+      if (response.data.length) {
+        let selected = JSON.stringify(response.data[0]);
+        selected = JSON.parse(selected);
+        this.setState({
+          products: response.data, 
+          selected: selected, 
+          loaded: true,
+          selectedHex: response.data[0].colors[0].hex
+        });
+      } else {
+        this.addNewProduct();
+        this.setState({loaded: true});
+      }
     })
     .catch((err) => {
       console.error(err);
@@ -115,6 +126,7 @@ class Home extends Component {
     let newState = Object.assign({}, this.state);
     newState.selected.printArea[newState.imageIndex].offsetLeft = offsetLeft;
     newState.selected.printArea[newState.imageIndex].offsetTop = offsetTop;
+    newState.mode = this.setMode(newState);
     this.setState(newState);
   }
 
@@ -157,6 +169,7 @@ class Home extends Component {
       width: undefined,
       height: undefined,
     };
+    newState.mode = this.setMode(newState);
     this.setState(newState);
   }
 
@@ -255,6 +268,21 @@ class Home extends Component {
     this.setState(newState);
   }
 
+  readProduct(e, index) {
+    if (e.target.tagName !== 'IMG') {
+      let newState = Object.assign({}, this.state);
+      let selected = JSON.stringify(newState.products[index]);
+      newState.selected = JSON.parse(selected);
+      newState.index = index;
+      newState.vIndex = 0;
+      newState.mode = 'read';
+      newState.selectedHex = newState.selected.colors[0].hex;
+      newState.imageIndex = 0;
+      newState.picker = false;
+      this.setState(newState);
+    }
+  }
+
   addNewProduct() {
     let newState = Object.assign({}, this.state);
     newState.selected = {
@@ -331,26 +359,37 @@ class Home extends Component {
     });
   }
 
-  delete(index) {
+  promptDelete(index) {
+    this.setState({deleteIndex: index, showModal: true});
+  }
+
+  hideModal() {
+    this.setState({deleteIndex: undefined, showModal: false});
+  }
+
+  delete() {
     let newState = Object.assign({}, this.state);
-    newState.products.splice(index, 1);
-    if (index > 0 && newState.products.length) {
-      let selected = JSON.stringify(newState.products[index - 1]);
+    newState.products.splice(newState.deleteIndex, 1);
+    if (newState.deleteIndex > 0 && newState.products.length) {
+      let selected = JSON.stringify(newState.products[newState.deleteIndex - 1]);
       newState.selected = JSON.parse(selected);
       newState.selectedHex = newState.selected.colors[0].hex;
-    } else if (index === 0 && newState.products.length) {
+    } else if (newState.deleteIndex === 0 && newState.products.length) {
       let selected = JSON.stringify(newState.products[0]);
       newState.selected = JSON.parse(selected);
       newState.selectedHex = newState.selected.colors[0].hex;
     }
-    newState.index = index - 1 || 0;
+    let deleteId = newState.selected.id;
+    newState.index = newState.deleteIndex - 1 || 0;
     newState.vIndex = 0;
     newState.mode = 'read';
     newState.imageIndex = 0;
     newState.picker = false;
+    newState.deleteIndex = undefined;
+    newState.showModal = false;
     this.setState(newState, () => {
       // axios delete product
-      axios.put('/product', {id: this.state.selected.id})
+      axios.delete(`/product/${deleteId}`)
       .then((response) => {
         console.log(response);
       })
@@ -373,11 +412,11 @@ class Home extends Component {
 
     let productList = products.map((product, i) => {
       return (
-        <div className="product-item flex jc-sb ai-c" key={i}>
+        <div className="product-item flex jc-sb ai-c" key={i} onClick={(e) => this.readProduct(e, i)}>
           <h2>{product.brand.toUpperCase()} {product.number}</h2>
           <div className="icon-wrapper">
             <img onClick={() => this.editProduct(i)} src={getAsset('edit')} />
-            <img onClick={() => this.delete(i)} src={getAsset('garbage')} />
+            <img onClick={() => this.promptDelete(i)} src={getAsset('garbage')} />
           </div>
         </div>
       );
@@ -444,6 +483,10 @@ class Home extends Component {
 
     return (
       <div id="Home">
+        {this.state.showModal ? (
+          <PromptModal message="Are you sure you want to delete this product?" buttonAction="Delete" 
+            callback={this.delete} cancel={this.hideModal} />
+        ) : null}
         <HomeNav header="PRODUCTS" />
         <div className="flex">
           <PageNav />
@@ -553,9 +596,25 @@ class Home extends Component {
                         <img onClick={() => this.setImageIndex(0)} src={getAsset('front-side-button')} />
                         <img onClick={() => this.setImageIndex(1)} src={getAsset('back-side-button')} />
                       </div>
-                      {this.state.selected.images[this.state.selectedHex][this.state.imageIndex] ? (
-                        <Draggable on bounds="parent" cancel=".resize" onStop={this.setPosition}>
-                          <div className="print-area" style={this.state.selected.printArea[this.state.imageIndex]}>
+                      {this.state.selected.images[this.state.selectedHex][0] && this.state.imageIndex === 0 ? (
+                        <Draggable on bounds="parent" cancel=".resize" onStop={this.setPosition}
+                          defaultPosition={this.state.selected.printArea[0].offsetLeft ? {
+                            x: this.state.selected.printArea[0].offsetLeft, 
+                            y: this.state.selected.printArea[0].offsetTop} 
+                          : {x: 0, y: 0}}>
+                          <div className="print-area" style={this.state.selected.printArea[0]}>
+                            <img className="resize diagonal" draggable="true" onDragStart={this.startDrag} 
+                              onDrag={this.drag} onDragEnd={this.stopDrag} src={getAsset('resize-diagonal')} />
+                          </div>
+                        </Draggable>
+                      ) : null}
+                      {this.state.selected.images[this.state.selectedHex][1] && this.state.imageIndex === 1 ? (
+                        <Draggable on bounds="parent" cancel=".resize" onStop={this.setPosition}
+                          defaultPosition={this.state.selected.printArea[1].offsetLeft ? {
+                            x: this.state.selected.printArea[1].offsetLeft, 
+                            y: this.state.selected.printArea[1].offsetTop} 
+                          : {x: 0, y: 0}}>
+                          <div className="print-area" style={this.state.selected.printArea[1]}>
                             <img className="resize diagonal" draggable="true" onDragStart={this.startDrag} 
                               onDrag={this.drag} onDragEnd={this.stopDrag} src={getAsset('resize-diagonal')} />
                           </div>

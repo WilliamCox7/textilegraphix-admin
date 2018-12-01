@@ -91,7 +91,7 @@ module.exports = (app) => {
   app.post('/product', (req, res) => {
     ProductModule.createProduct(req.body)
     .then((result) => {
-      res.status(200).send(`${req.body.brand} ${req.body.number} Created`, result);
+      res.status(200).send(result);
     })
     .catch((err) => {
       console.error(err);
@@ -99,10 +99,10 @@ module.exports = (app) => {
     });
   });
 
-  app.delete('/product', (req, res) => {
-    ProductModule.deleteProduct(req.body)
+  app.delete('/product/:id', (req, res) => {
+    ProductModule.deleteProduct(req.params.id)
     .then(() => {
-      res.status(200).send(`${req.body.brand} ${req.body.number} Deleted`);
+      res.status(200).send(`The product was deleted`);
     })
     .catch((err) => {
       console.error(err);

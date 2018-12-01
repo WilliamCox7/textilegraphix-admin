@@ -5,7 +5,6 @@ const ErrorModule = require('../error');
 module.exports = function getProductsPrintArea(product) {
   return mysql.createConnection(config.mysql).then((conn) => {
 
-
     return conn.query(`
       SELECT * FROM productPrintArea
       WHERE productId = ${product.id}
@@ -36,7 +35,6 @@ module.exports = function getProductsPrintArea(product) {
       conn.end();
       return Promise.reject(ErrorModule.handle(err, 'MBG0'));
     });
-
 
   });
 }

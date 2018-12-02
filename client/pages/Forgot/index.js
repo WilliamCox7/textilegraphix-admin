@@ -33,7 +33,7 @@ class Forgot extends Component {
       axios.post('/send-reset-email', this.state.form)
       .then((response) => {
         this.setState({actionMsg: 'An email was sent to your inbox'});
-        setTimeout(() => this.props.history.push('/login'), 5000);
+        setTimeout(() => this.props.history.push('/admin/login'), 5000);
       })
       .catch((error) => {
         console.error(error);

@@ -25,13 +25,13 @@ class RedirectHandler extends Component {
   }
 
   pageNeedsAuth(location) {
-    return location.pathname !== '/forgot' && location.pathname !== '/reset';
+    return location.pathname !== '/admin/forgot' && location.pathname !== '/admin/reset';
   }
 
   getUser() {
     axios.get('/user')
-    .then((response) => this.props.history.push('/'))
-    .catch((error) => this.props.history.push('/login'));
+    .then((response) => this.props.history.push('/admin'))
+    .catch((error) => this.props.history.push('/admin/login'));
   }
 
   render() {

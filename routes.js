@@ -23,7 +23,7 @@ module.exports = (app) => {
   });
 
   app.post('/authenticate', passport.authenticate('local', {
-    failureRedirect: '/login'
+    failureRedirect: '/admin/login'
   }), (req, res) => {
     res.status(200).send('Authenticated');
   });

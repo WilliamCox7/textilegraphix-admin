@@ -45,7 +45,7 @@ class Login extends Component {
       axios.post('/authenticate', this.state.form)
       .then((response) => {
         if (response.status === 200) {
-          this.props.history.push('/');
+          this.props.history.push('/admin');
         } else {
           this.setState({errMsg: `Wrong email or password`});
         }
@@ -78,7 +78,7 @@ class Login extends Component {
             <h3>{this.state.errMsg}</h3>
           ) : null}
           <button onClick={this.authenticate}>LOGIN</button>
-          <h2>Forgot Password? <Link to="/forgot">Reset</Link></h2>
+          <h2>Forgot Password? <Link to="/admin/forgot">Reset</Link></h2>
         </div>
       </div>
     );

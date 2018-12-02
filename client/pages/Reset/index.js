@@ -37,7 +37,7 @@ class Reset extends Component {
       axios.put('/update-password', this.state.form)
       .then((response) => {
         this.setState({actionMsg: 'Password has been updated'});
-        setTimeout(() => this.props.history.push('/login'), 5000);
+        setTimeout(() => this.props.history.push('/admin/login'), 5000);
       })
       .catch((error) => {
         console.error(error);

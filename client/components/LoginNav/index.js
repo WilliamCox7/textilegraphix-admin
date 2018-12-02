@@ -7,7 +7,7 @@ class LoginNav extends Component {
   render() {
     return (
       <div id="LoginNav" className="flex jc-sb">
-        <Link to="/" className="logo-wrapper">
+        <Link to="/admin" className="logo-wrapper">
           <img src={getAsset('logo-text-white')} />
         </Link>
         <span></span>

@@ -14,10 +14,10 @@ class App extends Component {
       <BrowserRouter>
         <div className="App">
           <RedirectHandler />
-          <Route exact path="/admin" component={Home} />
-          <Route path="/admin/login" component={Login} />
-          <Route path="/admin/forgot" component={Forgot} />
-          <Route path="/admin/reset" component={Reset} />
+          <Route exact path="/" component={Home} />
+          <Route path="/login" component={Login} />
+          <Route path="/forgot" component={Forgot} />
+          <Route path="/reset" component={Reset} />
         </div>
       </BrowserRouter>
     );

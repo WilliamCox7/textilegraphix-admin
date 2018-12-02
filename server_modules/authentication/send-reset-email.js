@@ -16,7 +16,7 @@ module.exports = (requestBody, token) => {
   var options = {
     to: requestBody.email,
     subject: `Reset Password`,
-    html: `<div>Click <a href="${config.host}/admin/reset?t=${token}">here</a> to reset your password</div>`
+    html: `<div>Click <a href="${config.host}/reset?t=${token}">here</a> to reset your password</div>`
   }
 
   return transporter.sendMail(options);

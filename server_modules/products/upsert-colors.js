@@ -1,3 +1,5 @@
+const ErrorModule = require('../error');
+
 module.exports = function upsertColors(product, conn) {
   return Promise.all(product.colors.map((color) => {
     return conn.query(`

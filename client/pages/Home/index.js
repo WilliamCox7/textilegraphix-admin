@@ -60,7 +60,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    axios.get('/products')
+    axios.get('/admin/products')
     .then((response) => {
       if (response.data.length) {
         let selected = JSON.stringify(response.data[0]);
@@ -326,7 +326,7 @@ class Home extends Component {
     newState.picker = false;
     this.setState(newState, () => {
       // axios update product
-      axios.put('/product', this.state.selected)
+      axios.put('/admin/product', this.state.selected)
       .then((response) => {
         console.log(response);
       })
@@ -347,7 +347,7 @@ class Home extends Component {
     newState.picker = false;
     this.setState(newState, () => {
       // axios create product
-      axios.post('/product', this.state.selected)
+      axios.post('/admin/product', this.state.selected)
       .then((response) => {
         console.log(response);
         // add id to selected/products
@@ -388,7 +388,7 @@ class Home extends Component {
     newState.showModal = false;
     this.setState(newState, () => {
       // axios delete product
-      axios.delete(`/product/${deleteId}`)
+      axios.delete(`/admin/product/${deleteId}`)
       .then((response) => {
         console.log(response);
       })

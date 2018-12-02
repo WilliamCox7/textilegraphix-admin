@@ -21,7 +21,7 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    axios.get('/logout');
+    axios.get('/admin/logout');
 
     document.addEventListener('keypress', (e) => {
       if (e.keyCode === 13) {
@@ -42,7 +42,7 @@ class Login extends Component {
     } else if (!this.state.form.password) {
       this.setState({errMsg: 'Please input your password'});
     } else {
-      axios.post('/authenticate', this.state.form)
+      axios.post('/admin/authenticate', this.state.form)
       .then((response) => {
         if (response.status === 200) {
           this.props.history.push('/admin');

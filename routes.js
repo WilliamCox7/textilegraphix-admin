@@ -10,7 +10,7 @@ conn.connect();
 
 module.exports = (app) => {
   
-  app.post('/user/create', (req, res) => {
+  app.post('/admin/user/create', (req, res) => {
     let salt = bcrypt.genSaltSync(10);
     let hash = bcrypt.hashSync(req.body.password, salt);
     conn.query(`
@@ -22,22 +22,22 @@ module.exports = (app) => {
     });
   });
 
-  app.post('/authenticate', passport.authenticate('local', {
+  app.post('/admin/authenticate', passport.authenticate('local', {
     failureRedirect: '/admin/login'
   }), (req, res) => {
     res.status(200).send('Authenticated');
   });
   
-  app.get('/user', passport.authWare(), (req, res) => {
+  app.get('/admin/user', passport.authWare(), (req, res) => {
     res.status(200).send({ name: req.user.first });
   });
 
-  app.get('/logout', (req, res) => {
+  app.get('/admin/logout', (req, res) => {
     req.session.destroy();
     res.status(200).send('User logged out');
   });
 
-  app.post('/send-reset-email', (req, res) => {
+  app.post('/admin/send-reset-email', (req, res) => {
     AuthModule.createShortToken(req.body)
     .then((token) => {
       AuthModule.sendResetEmail(req.body, token)
@@ -55,7 +55,7 @@ module.exports = (app) => {
     });
   });
 
-  app.put('/update-password', (req, res) => {
+  app.put('/admin/update-password', (req, res) => {
     AuthModule.updatePassword(req.body)
     .then(() => {
       res.status(200).send('Password Updated');
@@ -66,7 +66,7 @@ module.exports = (app) => {
     });
   });
 
-  app.get('/products', (req, res) => {
+  app.get('/admin/products', (req, res) => {
     ProductModule.getProducts()
     .then((products) => {
       res.status(200).send(products);
@@ -77,7 +77,7 @@ module.exports = (app) => {
     });
   });
 
-  app.put('/product', (req, res) => {
+  app.put('/admin/product', (req, res) => {
     ProductModule.updateProduct(req.body)
     .then(() => {
       res.status(200).send(`${req.body.brand} ${req.body.number} Updated`);
@@ -88,7 +88,7 @@ module.exports = (app) => {
     });
   });
 
-  app.post('/product', (req, res) => {
+  app.post('/admin/product', (req, res) => {
     ProductModule.createProduct(req.body)
     .then((result) => {
       res.status(200).send(result);
@@ -99,7 +99,7 @@ module.exports = (app) => {
     });
   });
 
-  app.delete('/product/:id', (req, res) => {
+  app.delete('/admin/product/:id', (req, res) => {
     ProductModule.deleteProduct(req.params.id)
     .then(() => {
       res.status(200).send(`The product was deleted`);

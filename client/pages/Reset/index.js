@@ -34,7 +34,7 @@ class Reset extends Component {
     } else if (this.state.form.password !== this.state.form.confirm) {
       this.setState({errMsg: 'Your passwords do not match'});
     } else {
-      axios.put('/update-password', this.state.form)
+      axios.put('/admin/update-password', this.state.form)
       .then((response) => {
         this.setState({actionMsg: 'Password has been updated'});
         setTimeout(() => this.props.history.push('/admin/login'), 5000);

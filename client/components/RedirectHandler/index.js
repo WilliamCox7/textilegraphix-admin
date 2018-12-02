@@ -29,7 +29,7 @@ class RedirectHandler extends Component {
   }
 
   getUser() {
-    axios.get('/user')
+    axios.get('/admin/user')
     .then((response) => this.props.history.push('/admin'))
     .catch((error) => this.props.history.push('/admin/login'));
   }

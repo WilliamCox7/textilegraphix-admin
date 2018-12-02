@@ -561,6 +561,12 @@ class Home extends Component {
                       <div className="field">
                         OUR RATING: <input className="small" value={this.state.selected.rating} name="rating" onChange={this.updateField} /> / 10
                       </div>
+                      <div className="field">
+                        WEIGHT: <input className="small" value={this.state.selected.weight} name="weight" onChange={this.updateField} /> lbs
+                      </div>
+                      <div className="field">
+                        BASE COST: $<input className="small" value={this.state.selected.costOfShirt} name="costOfShirt" onChange={this.updateField} />
+                      </div>
                       <div className="color-variants">
                         <h1>COLOR VARIANTS</h1>
                         <hr />

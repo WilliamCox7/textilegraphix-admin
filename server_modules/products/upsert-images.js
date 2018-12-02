@@ -46,7 +46,7 @@ function handleData(data) {
     fs.writeFile(fileLocation, data, 'base64', (err) => err ? ErrorModule.handle(err, 'XZ9S') : null);
     return fileName;
   }
-  return false;
+  return data;
 }
 
 function createGuid() {

@@ -62,7 +62,6 @@ class Home extends Component {
   componentDidMount() {
     axios.get('/products')
     .then((response) => {
-      console.log(response.data);
       if (response.data.length) {
         let selected = JSON.stringify(response.data[0]);
         selected = JSON.parse(selected);

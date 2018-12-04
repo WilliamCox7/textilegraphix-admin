@@ -41,8 +41,8 @@ function handleData(data) {
     if (fileType === 'png') data = data.replace(/^data:image\/png;base64,/, "");
     else data = data.replace(/^data:image\/jpeg;base64,/, "");
 
-    let fileName = `${config.host}/src/${guid}.${fileType}`;
-    let fileLocation = `${getRepoDir()}/src/${guid}.${fileType}`;
+    let fileName = `${config.host}/admin/src/${guid}.${fileType}`;
+    let fileLocation = `${getRepoDir()}/build/admin/src/${guid}.${fileType}`;
     fs.writeFile(fileLocation, data, 'base64', (err) => err ? ErrorModule.handle(err, 'XZ9S') : null);
     return fileName;
   }

@@ -27,7 +27,7 @@ require('./routes')(app);
 
 AuthModule.clearShortTokens();
 
-app.get(['/src/*.png', '/src/*.jpg'], (req, res) => {
+app.get(['/admin/src/*.png', '/admin/src/*.jpg'], (req, res) => {
   res.sendFile(req.url, { root: process.cwd() });
 });
 

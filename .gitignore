@@ -4,4 +4,4 @@ build/*
 !build/index.html
 !build/favicon.png
 .DS_Store
-src/
+src/*

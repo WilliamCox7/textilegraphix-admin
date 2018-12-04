@@ -57,8 +57,8 @@ function createGuid() {
 }
 
 function getRepoDir() {
-  let folders =  __dirname.split("/")
+  let folders =  __dirname.split("/admin")
   folders.pop();
   folders.pop()
-  return folders.join("/");
+  return folders.join("/admin");
 }

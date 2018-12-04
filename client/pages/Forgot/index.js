@@ -30,10 +30,10 @@ class Forgot extends Component {
     if (!this.state.form.email) {
       this.setState({errMsg: 'Please input your email'});
     } else {
-      axios.post('/send-reset-email', this.state.form)
+      axios.post('/admin/send-reset-email', this.state.form)
       .then((response) => {
         this.setState({actionMsg: 'An email was sent to your inbox'});
-        setTimeout(() => this.props.history.push('/login'), 5000);
+        setTimeout(() => this.props.history.push('/admin/login'), 5000);
       })
       .catch((error) => {
         console.error(error);

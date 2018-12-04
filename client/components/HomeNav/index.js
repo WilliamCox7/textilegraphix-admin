@@ -12,7 +12,7 @@ class HomeNav extends Component {
         </div>
         <div className="action-wrapper flex jc-sb ai-c">
           <h1>{this.props.header}</h1>
-          <Link className="logout-button" to="/admin/login">LOGOUT</Link>
+          <Link className="logout-button" to="/login">LOGOUT</Link>
         </div>
       </div>
     );

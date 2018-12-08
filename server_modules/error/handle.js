@@ -39,7 +39,6 @@ function getErrorMessage(id) {
     case 'DHP0': return 'There was an error while deleting a products images';
     case 'VBR1': return 'There was an error while deleting a products colors';
     case 'XZ9S': return 'There was an error while writing a file';
-    case 'XZ9Y': return 'There was an error while writing a file';
     default: return 'An unknown message occured';
   }
 

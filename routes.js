@@ -10,7 +10,7 @@ conn.connect();
 
 module.exports = (app) => {
   
-  app.post('/admin/user/create', (req, res) => {
+  app.post('/admin/user/create', passport.authWare(), (req, res) => {
     let salt = bcrypt.genSaltSync(10);
     let hash = bcrypt.hashSync(req.body.password, salt);
     conn.query(`

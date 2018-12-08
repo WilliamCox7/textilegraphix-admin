@@ -7,5 +7,6 @@ module.exports = {
   upsertColors: require('./upsert-colors'),
   upsertImages: require('./upsert-images'),
   createProduct: require('./create-product'),
-  deleteProduct: require('./delete-product')
+  deleteProduct: require('./delete-product'),
+  removeImages: require('./remove-images')
 }

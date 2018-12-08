@@ -62,6 +62,7 @@ class Home extends Component {
   componentDidMount() {
     axios.get('/admin/products')
     .then((response) => {
+      console.log(response.data);
       if (response.data.length) {
         let selected = JSON.stringify(response.data[0]);
         selected = JSON.parse(selected);
@@ -209,12 +210,16 @@ class Home extends Component {
 
   updatePickedColor(e) {
     let newState = Object.assign({}, this.state);
-    let oldValue = newState.selected.colors[newState.vIndex][e.target.name];
-    newState.selected.colors[newState.vIndex][e.target.name] = e.target.value;
-    newState.selected.images[e.target.value] = newState.selected.images[oldValue];
-    newState.selectedHex = newState.selected.colors[newState.vIndex].hex;
-    delete newState.selected.images[oldValue];
-    newState.mode = this.setMode(newState);
+    if (e.target.name === 'name') {
+      newState.selected.colors[newState.vIndex][e.target.name] = e.target.value;
+    } else {
+      let oldValue = newState.selected.colors[newState.vIndex][e.target.name];
+      newState.selected.colors[newState.vIndex][e.target.name] = e.target.value;
+      newState.selected.images[e.target.value] = newState.selected.images[oldValue];
+      newState.selectedHex = newState.selected.colors[newState.vIndex].hex;
+      delete newState.selected.images[oldValue];
+      newState.mode = this.setMode(newState);
+    }
     this.setState(newState);
   }
 
@@ -254,11 +259,11 @@ class Home extends Component {
     }
   }
 
-  editProduct(index) {
+  editProduct(product) {
     let newState = Object.assign({}, this.state);
-    let selected = JSON.stringify(newState.products[index]);
+    let selected = JSON.stringify(product);
     newState.selected = JSON.parse(selected);
-    newState.index = index;
+    newState.index = newState.products.indexOf(product);
     newState.vIndex = 0;
     newState.mode = 'edit';
     newState.selectedHex = newState.selected.colors[0].hex;
@@ -267,12 +272,12 @@ class Home extends Component {
     this.setState(newState);
   }
 
-  readProduct(e, index) {
+  readProduct(e, product) {
     if (e.target.tagName !== 'IMG') {
       let newState = Object.assign({}, this.state);
-      let selected = JSON.stringify(newState.products[index]);
+      let selected = JSON.stringify(product);
       newState.selected = JSON.parse(selected);
-      newState.index = index;
+      newState.index = newState.products.indexOf(product);
       newState.vIndex = 0;
       newState.mode = 'read';
       newState.selectedHex = newState.selected.colors[0].hex;
@@ -325,7 +330,6 @@ class Home extends Component {
     newState.imageIndex = 0;
     newState.picker = false;
     this.setState(newState, () => {
-      // axios update product
       axios.put('/admin/product', this.state.selected)
       .then((response) => {
         console.log(response);
@@ -346,11 +350,12 @@ class Home extends Component {
     newState.imageIndex = 0;
     newState.picker = false;
     this.setState(newState, () => {
-      // axios create product
       axios.post('/admin/product', this.state.selected)
       .then((response) => {
-        console.log(response);
-        // add id to selected/products
+        let updState = Object.assign({}, this.state);
+        updState.selected.id = response.data.insertId;
+        updState.products[updState.index].id = response.data.insertId;
+        this.setState(updState);
       })
       .catch((err) => {
         console.error(err);
@@ -358,8 +363,10 @@ class Home extends Component {
     });
   }
 
-  promptDelete(index) {
-    this.setState({deleteIndex: index, showModal: true});
+  promptDelete(product) {
+    let deleteIndex = this.state.products.indexOf(product);
+    console.log(deleteIndex);
+    this.setState({deleteIndex: deleteIndex, showModal: true});
   }
 
   hideModal() {
@@ -368,7 +375,7 @@ class Home extends Component {
 
   delete() {
     let newState = Object.assign({}, this.state);
-    newState.products.splice(newState.deleteIndex, 1);
+    let deleted = newState.products.splice(newState.deleteIndex, 1);
     if (newState.deleteIndex > 0 && newState.products.length) {
       let selected = JSON.stringify(newState.products[newState.deleteIndex - 1]);
       newState.selected = JSON.parse(selected);
@@ -378,7 +385,7 @@ class Home extends Component {
       newState.selected = JSON.parse(selected);
       newState.selectedHex = newState.selected.colors[0].hex;
     }
-    let deleteId = newState.selected.id;
+    let deleteId = deleted[0].id;
     newState.index = newState.deleteIndex - 1 || 0;
     newState.vIndex = 0;
     newState.mode = 'read';
@@ -411,11 +418,11 @@ class Home extends Component {
 
     let productList = products.map((product, i) => {
       return (
-        <div className="product-item flex jc-sb ai-c" key={i} onClick={(e) => this.readProduct(e, i)}>
+        <div className="product-item flex jc-sb ai-c" key={i} onClick={(e) => this.readProduct(e, product)}>
           <h2>{product.brand.toUpperCase()} {product.number}</h2>
           <div className="icon-wrapper">
-            <img onClick={() => this.editProduct(i)} src={getAsset('edit')} />
-            <img onClick={() => this.promptDelete(i)} src={getAsset('garbage')} />
+            <img onClick={() => this.editProduct(product)} src={getAsset('edit')} />
+            <img onClick={() => this.promptDelete(product)} src={getAsset('garbage')} />
           </div>
         </div>
       );

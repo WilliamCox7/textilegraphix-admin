@@ -68,6 +68,12 @@ module.exports = function createProduct(product) {
 
         ]);
       })
+      .then(() => {
+        conn.end();
+        return {
+          insertId: product.id
+        };
+      })
       .catch((err) => {
         conn.end();
         return Promise.reject(ErrorModule.handle(err, 'WTT7'));
